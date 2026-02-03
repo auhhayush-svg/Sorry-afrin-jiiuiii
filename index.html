@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,35 +8,27 @@
         body { background-color: #ffffff; font-family: 'Arial', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; color: #333; }
         .phone-container { width: 320px; height: 620px; background: white; border-radius: 40px; border: 8px solid #333; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; }
         
-        .screen { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; box-sizing: border-box; }
+        .screen { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; box-sizing: border-box; position: relative; }
         .active { display: flex; }
 
-        /* Lock Screen */
+        /* Notification */
         .lock-screen { background: #fdf2f8; justify-content: flex-start; padding-top: 60px; }
         #notification { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); cursor: pointer; border-left: 5px solid #ff69b4; width: 240px; text-align: left; animation: slideIn 0.8s ease-out; }
-
         @keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* Animations */
-        .floating { animation: float 3s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-
-        .heart-fall { position: absolute; color: #ff69b4; font-size: 20px; animation: fall 3s linear infinite; opacity: 0; }
-        @keyframes fall { 0% { transform: translateY(-10vh); opacity: 1; } 100% { transform: translateY(100vh); opacity: 0; } }
+        /* Game Elements */
+        #game-canvas { width: 100%; height: 300px; background: #fff0f5; border-radius: 20px; position: relative; overflow: hidden; cursor: crosshair; margin: 10px 0; border: 2px dashed #ff69b4; }
+        .falling-heart { position: absolute; font-size: 25px; cursor: pointer; user-select: none; }
 
         /* Final Reveal Elements */
-        .horizontal-line { display: flex; align-items: flex-end; justify-content: center; gap: 15px; margin: 20px 0; width: 100%; }
-        .bouquet { width: 120px; height: auto; }
-        .cat-balloons { width: 100px; height: auto; }
-        .hug-gif { width: 110px; margin-top: 15px; border-radius: 10px; }
+        .horizontal-line { display: flex; align-items: flex-end; justify-content: center; gap: 15px; margin: 15px 0; width: 100%; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .bouquet { width: 110px; }
+        .cat-balloons { width: 90px; }
+        .hug-gif { width: 110px; margin-top: 10px; }
 
-        .btn-gift { background: none; border: none; cursor: pointer; transition: transform 0.2s; }
-        .btn-gift:hover { transform: scale(1.1); }
-        
         .reveal-btn { background: #ff69b4; color: white; border: none; padding: 12px 25px; border-radius: 25px; font-weight: bold; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 10px rgba(255, 105, 180, 0.4); }
-        .finish-btn { background: #eee; color: #555; border: none; padding: 8px 15px; border-radius: 20px; margin-top: 20px; cursor: pointer; }
-
-        h2 { font-size: 1.3rem; margin: 10px 0; }
+        .finish-btn { background: #eee; color: #555; border: none; padding: 8px 15px; border-radius: 20px; margin-top: 15px; cursor: pointer; }
         .glow-text { color: #ff1493; text-shadow: 0 0 10px rgba(255, 20, 147, 0.2); }
     </style>
 </head>
@@ -52,59 +44,93 @@
 
         <div id="s2" class="screen">
             <h2 class="glow-text">i know you are mad at me Kajal 🥺</h2>
-            <img src="bear-sad.gif" style="width: 150px;">
-            <button class="reveal-btn" onclick="next(3)">Next ✉️</button>
+            <img src="bear-sad.gif" style="width: 140px;">
+            <p style="font-size: 0.8rem;">I won't let you see the gift until you play a quick game!</p>
+            <button class="reveal-btn" onclick="next(3)">Start Game 🎮</button>
         </div>
 
         <div id="s3" class="screen">
-            <h2 style="color: #ff69b4;">Wait to see what i made for you...</h2>
-            <button class="btn-gift" onclick="startHearts()">
+            <h2 style="color: #ff69b4;">Catch 5 Hearts! ❤️</h2>
+            <p id="score-text">Score: 0</p>
+            <div id="game-canvas"></div>
+            <p style="font-size: 0.7rem; color: #888;">Tap the falling hearts to unlock your gift</p>
+        </div>
+
+        <div id="s4" class="screen">
+            <h2 style="color: #ff69b4;">You Won! Now open this...</h2>
+            <button style="background:none; border:none; cursor:pointer;" onclick="next(5)">
                 <img src="gift-box.gif" style="width: 180px;">
-                <p style="color: #ff69b4; font-weight: bold; margin-top: 15px;">Accept This Gift ✉️</p>
+                <p style="color: #ff69b4; font-weight: bold; margin-top: 15px;">Tap the Letter ✉️</p>
             </button>
         </div>
 
-        <div id="s4" class="screen" style="background: radial-gradient(circle, #fff0f5 0%, #ffffff 100%);">
-            <h2 class="glow-text" style="font-weight: bold; font-size: 1.5rem;">i'm Sorry i Hurt You!</h2>
-            <p style="font-style: italic; color: #888;">For the most beautiful Kajal</p>
+        <div id="s5" class="screen" style="background: radial-gradient(circle, #fff0f5 0%, #ffffff 100%);">
+            <h2 class="glow-text" style="font-weight: bold; font-size: 1.4rem;">i'm Sorry i Hurt You!</h2>
             
-            <div class="horizontal-line floating">
+            <div class="horizontal-line">
                 <img src="flower.jpg" class="bouquet" alt="Bouquet">
                 <img src="cat-balloons.png" class="cat-balloons" alt="Cat">
             </div>
 
-            <h2 style="color: #ff69b4; margin-top: 10px; letter-spacing: 1px;">I LOVE YOU KAJAL ❤️</h2>
+            <h2 style="color: #ff69b4; margin-top: 5px;">I LOVE YOU KAJAL ❤️</h2>
             <img src="bear-hug.gif" class="hug-gif">
 
-            <button class="finish-btn" onclick="next(5)">Close x</button>
+            <button class="finish-btn" onclick="next(6)">Close x</button>
         </div>
 
-        <div id="s5" class="screen">
+        <div id="s6" class="screen">
             <h2 class="glow-text">Forgiven? 🌹</h2>
             <button class="reveal-btn" onclick="location.reload()">Replay ❤️</button>
         </div>
     </div>
 
     <script>
+        let score = 0;
+        const gameCanvas = document.getElementById('game-canvas');
+        const scoreDisplay = document.getElementById('score-text');
+
         function next(num) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById('s' + num).classList.add('active');
+            if(num === 3) startGame();
         }
 
-        function startHearts() {
-            next(4);
-            for(let i=0; i<15; i++) {
-                setTimeout(createHeart, i * 200);
-            }
+        function startGame() {
+            const gameInterval = setInterval(() => {
+                if(score >= 5) {
+                    clearInterval(gameInterval);
+                    setTimeout(() => next(4), 500);
+                    return;
+                }
+                createFallingHeart();
+            }, 800);
         }
 
-        function createHeart() {
+        function createFallingHeart() {
             const heart = document.createElement('div');
-            heart.classList.add('heart-fall');
+            heart.className = 'falling-heart';
             heart.innerHTML = '❤️';
-            heart.style.left = Math.random() * 100 + '%';
-            document.getElementById('s4').appendChild(heart);
-            setTimeout(() => heart.remove(), 3000);
+            heart.style.left = Math.random() * (gameCanvas.offsetWidth - 30) + 'px';
+            heart.style.top = '-50px';
+            
+            heart.onclick = () => {
+                score++;
+                scoreDisplay.innerText = `Score: ${score}`;
+                heart.remove();
+            };
+
+            gameCanvas.appendChild(heart);
+
+            let topPos = -50;
+            const fallInterval = setInterval(() => {
+                topPos += 3;
+                heart.style.top = topPos + 'px';
+                if(topPos > gameCanvas.offsetHeight) {
+                    clearInterval(fallInterval);
+                    heart.remove();
+                }
+                if(score >= 5) clearInterval(fallInterval);
+            }, 20);
         }
     </script>
 </body>
